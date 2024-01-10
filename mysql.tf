@@ -1,8 +1,8 @@
 resource "kubernetes_deployment" "example" {
   metadata {
-    name = "terraform-example"
+    name = "mysql_container"
     labels = {
-      test = "MyExampleApp"
+      test = "myapp"
     }
   }
 
@@ -11,21 +11,21 @@ resource "kubernetes_deployment" "example" {
 
     selector {
       match_labels = {
-        test = "MyExampleApp"
+        test = "myapp"
       }
     }
 
     template {
       metadata {
         labels = {
-          test = "MyExampleApp"
+          test = "myapp"
         }
       }
 
       spec {
         container {
           image = "mysql:5.6"
-          name  = "example"
+          name  = "mysql"
 
           resources {
             limits = {
@@ -36,15 +36,13 @@ resource "kubernetes_deployment" "example" {
               cpu    = "250m"
               memory = "50Mi"
             }
-            liveness_probe {
+          }
+
+          liveness_probe {
             http_get {
               path = "/"
-              port = 80
+              port = 3306
 
-              http_header {
-                name  = "X-Custom-Header"
-                value = "Awesome"
-              }
             }
 
             initial_delay_seconds = 3
