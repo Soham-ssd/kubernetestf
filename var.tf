@@ -1,19 +1,15 @@
 resource "kubernetes_env" "example" {
-  container = "nginx"
+  container = "mysql"
   metadata {
-    name = "nginx-deployment"
+    name = "mysql-deployment"
   }
 
   api_version = "apps/v1"
   kind        = "Deployment"
 
   env {
-    name  = "NGINX_HOST"
-    value = "google.com"
+    name  = "MYSQL_ROOT_PASSWORD"
+    value = "unnati"
   }
 
-  env {
-    name  = "NGINX_PORT"
-    value = "90"
-  }
 }
