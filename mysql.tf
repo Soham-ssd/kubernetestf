@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "example" {
+resource "kubernetes-deployment" "example" {
   metadata {
-    name = "mysql_container"
+    name = "mysql-container"
     labels = {
       test = "myapp"
     }
