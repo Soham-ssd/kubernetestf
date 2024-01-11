@@ -26,6 +26,10 @@ resource "kubernetes_deployment" "example" {
         container {
           image = "mysql:5.6"
           name  = "mysql"
+          env {
+            name  = "MYSQL_ROOT_PASSWORD"
+            value = "unnati"
+              }
 
           resources {
             limits = {
