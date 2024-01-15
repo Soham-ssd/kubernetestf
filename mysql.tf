@@ -1,9 +1,7 @@
-resource "kubernetes_deployment" "example" {
+resource "kubernetes_deployment" "mysql" {
   metadata {
-    name = "mysql-container"
-    labels = {
-      test = "myapp"
-    }
+    namespace = kubernetes_namespace.app_namespace.metadata[0].name
+    name      = "mysql-deployment"
   }
 
   spec {
@@ -11,49 +9,33 @@ resource "kubernetes_deployment" "example" {
 
     selector {
       match_labels = {
-        test = "myapp"
+        app = "mysql"
       }
     }
 
     template {
       metadata {
         labels = {
-          test = "myapp"
+          app = "mysql"
         }
       }
 
       spec {
         container {
           image = "mysql:5.6"
-          name  = "mysql"
+          name  = "mysql-container"
+
           env {
             name  = "MYSQL_ROOT_PASSWORD"
             value = "unnati"
-              }
-
-          resources {
-            limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "50Mi"
-            }
           }
 
-          liveness_probe {
-            http_get {
-              path = "/"
-              port = 3306
-
-            }
-
-            initial_delay_seconds = 3
-            period_seconds        = 3
+          env {
+            name  = "MYSQL_DATABASE"
+            value = "wordpressdb"
+          }
           }
         }
       }
     }
   }
-}
