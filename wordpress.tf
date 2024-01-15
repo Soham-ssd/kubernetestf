@@ -1,9 +1,9 @@
-resource "kubernetes_deployment" "example1" {
+resource "kubernetes_deployment" "wordpress" {
+  depends_on = [kubernetes_service.mysql_service]
+
   metadata {
-    name = "wordpress-container"
-    labels = {
-      test = "myapp"
-    }
+    namespace = kubernetes_namespace.app_namespace.metadata[0].name
+    name      = "wordpress-deployment"
   }
 
   spec {
@@ -11,59 +11,40 @@ resource "kubernetes_deployment" "example1" {
 
     selector {
       match_labels = {
-        test = "myapp1"
+        app = "wordpress"
       }
     }
 
     template {
       metadata {
         labels = {
-          test = "myapp1"
+          app = "wordpress"
         }
       }
 
       spec {
         container {
           image = "wordpress:latest"
-          name  = "wordpress"
+          name  = "wordpress-container"
 
           env {
-            name  = "DB_HOST"
-            value = "mysql"
-              }
-          env {
-            name  = "DB_USER"
-            value = "root"
-              }
-          env {
-            name  = "DB_PASSWORD"
-            value = "unnati"
-              }
-          env {
-            name  = "DB_NAME"
-            value = "wp"
-              }
-          resources {
-            limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "50Mi"
-            }
+            name  = "WORDPRESS_DB_HOST"
+            value = kubernetes_service.mysql_service.spec[0].cluster_ip
           }
 
+          env {
+            name  = "WORDPRESS_DB_USER"
+            value = "root"
+          }
 
-          liveness_probe {
-            http_get {
-              path = "/"
-              port = 80
+          env {
+            name  = "WORDPRESS_DB_PASSWORD"
+            value = "unnati"
+          }
 
-            }
-
-            initial_delay_seconds = 3
-            period_seconds        = 3
+          env {
+            name  = "WORDPRESS_DB_NAME"
+            value = "wordpressdb"
           }
         }
       }
